@@ -1,3 +1,46 @@
+<?php include 'database.php'; ?>
+<?php session_start(); ?>
+<?php 
+    // Set Question number
+    $number = (int) $_GET['n'];
+
+    // Clear session on first question
+    if ($number == 1) {
+        session_destroy();
+    }
+
+    /*
+    *   Get Total Questions
+    */
+    $query = "SELECT * FROM questions";
+    
+    // Get results
+    $results = $mysqli->query($query) or die($mysqli->error. __LINE__);
+    $total = $results->num_rows;
+
+
+    /*
+    *   Get Question
+    */
+    $query = "SELECT * FROM `questions` 
+                WHERE question_number = $number";
+                
+    // Get result
+    $result = $mysqli->query($query) or die($mysqli->error. __LINE__);
+
+    $question = $result->fetch_assoc();
+
+    /*
+    *   Get Choices
+    */
+    $query = "SELECT * FROM `choices` 
+                WHERE question_number = $number";
+    
+    // Get result
+    $choices = $mysqli->query($query) or die($mysqli_error. __LINE__);
+
+    //$question = $result->fetch_assoc();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,18 +58,18 @@
     </header>
     <main>
         <div class="container">
-            <div class="current">Question 1 of 5</div>
+            <div class="current">Question <?php echo $question['question_number']; ?> of <?php echo $total; ?></div>
             <p class="question">
-                What does PHP stand for?
+                <?php echo $question['text']; ?>
             </p>
             <form action="process.php" method="post">
                 <ul class="choises">
-                    <li><input name="choice" type="radio" value="1">PHP: Hypertext Preprocessor</li>
-                    <li><input name="choice" type="radio" value="1">Private Home Page</li>
-                    <li><input name="choice" type="radio" value="1">Personal Home Page</li>
-                    <li><input name="choice" type="radio" value="1">Personal Hypertext Preprocessor</li>
+                    <?php while ($row = $choices->fetch_assoc()): ?>
+                        <li><input name="choice" type="radio" value="<?php echo $row['id']; ?>"><?php echo $row['text'] ?></li>
+                    <?php endwhile; ?>
                 </ul>
                 <input type="submit" vlaue="Submit">
+                <input type="hidden" name="number" value="<?php echo $number; ?>">
             </form>
         </div>
     </main>

@@ -1,3 +1,8 @@
+<?php 
+    include 'database.php';
+
+    if (isset($_POST))
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
